@@ -9,15 +9,20 @@ export class Game extends Scene
 
     create ()
     {
-        this.cameras.main.setBackgroundColor(0x00ff00);
+        this.cameras.main.setBackgroundColor('#c2f9abff');
 
-        this.add.image(960, 540, 'background').setAlpha(0.5).setScale(2);
+        // this.add.image(960, 540, 'background').setAlpha(0.5).setScale(2);
+        const bg = this.add.image(0, 175, 'game').setScale(1.5).setOrigin(0, 0);
 
-        this.add.text(960, 540, 'main game logic', {
-            fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
-            stroke: '#000000', strokeThickness: 8,
-            align: 'center'
-        }).setOrigin(0.5);
+        this.cameras.main.setBounds(0, 0, bg.displayWidth, bg.displayHeight);
+
+        this.input.on('pointermove', (pointer) => {
+
+            const { width } = this.scale;
+
+            this.cameras.main.scrollX = (pointer.x / width) * (bg.displayWidth - width);
+
+        });
 
         this.input.once('pointerdown', () => {
 
