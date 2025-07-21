@@ -33,11 +33,12 @@ export class Preloader extends Scene
         this.load.setPath('assets');
 
         this.load.image('start-menu', 'start-menu-draft.png');
-        this.load.image('animation', 'animation-draft.png');
-        this.load.image('game', 'game-draft.png');
-        this.load.image('photo', 'photo-draft.png');
+        this.load.image('animation-friend', 'animation-friend.png');
+        this.load.image('animation-photo', 'animation-photo.png');
+        this.load.image('game-bg', 'game-bg.png');
         this.load.image('end-credits', 'end-credits-draft.png');
-        this.load.image('photo-icon', 'photo-icon.png');
+        this.load.image('photo-icon-dark', 'photo-icon-dark.png');
+        this.load.image('photo-icon-light', 'photo-icon-light.png');
         this.load.image('fertilizer', 'fertilizer.png');
         this.load.image('fish-tank', 'fish-tank.png');
         this.load.image('food', 'food.png');
