@@ -79,9 +79,9 @@ export class Game extends Scene
             "And this is the final part. Click one more time to close this view."
         ];
 
-        photoIcon.setInteractive().on('pointerdown', () => {
-            this.showPhoto(null, textPages);
-        });
+        // photoIcon.setInteractive().on('pointerdown', () => {
+        //     this.showPhoto(null, textPages);
+        // });
 
         // Trigger the intro once all environment elements are loaded.
         this.friendAnimation(this.intro, 1);
