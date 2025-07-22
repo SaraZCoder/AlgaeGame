@@ -54,23 +54,23 @@ export class Game extends Scene
         });
         food.on('pointerdown', () => {
             this.showPhoto('algae-food', ['Dummy text for food.']);
-            oil.removeInteractive();
+            food.removeInteractive();
         });
         petFood.on('pointerdown', () => {
             this.showPhoto('algae-pet-food', ['Dummy text for pet food.']);
-            oil.removeInteractive();
+            petFood.removeInteractive();
         });
         fishTank.on('pointerdown', () => {
             this.showPhoto('algae-fish-tank', ['Dummy text for fish tank.']);
-            oil.removeInteractive();
+            fishTank.removeInteractive();
         });
         lotion.on('pointerdown', () => {
             this.showPhoto('algae-lotion', ['Dummy text for lotion.']);
-            oil.removeInteractive();
+            lotion.removeInteractive();
         });
         fertilizer.on('pointerdown', () => {
             this.showPhoto('algae-fertilizer', ['Dummy text for fertilizer.', 'MORE!!!', 'MOROEEEEEOOE!']);
-            oil.removeInteractive();
+            fertilizer.removeInteractive();
         });
 
         const textPages = [
