@@ -1,7 +1,6 @@
 import { Boot } from './scenes/Boot';
 import { Game as MainGame } from './scenes/Game';
 import { GameOver } from './scenes/GameOver';
-import { IntroAnimation } from './scenes/IntroAnimation';
 import { MainMenu } from './scenes/MainMenu';
 import { Preloader } from './scenes/Preloader';
 import { AUTO, Game } from 'phaser';
@@ -10,8 +9,9 @@ import { AUTO, Game } from 'phaser';
 //  https://docs.phaser.io/api-documentation/typedef/types-core#gameconfig
 const config = {
     type: AUTO,
-    width: 1536, // 16 by 9 inches
-    height: 864,
+    // 16 by 9 inches
+    width: 1536, // 768
+    height: 864, // 432
     parent: 'game-container',
     backgroundColor: '#00000000',
     scale: {
@@ -22,7 +22,6 @@ const config = {
         Boot,
         Preloader,
         MainMenu,
-        IntroAnimation,
         MainGame,
         GameOver
     ]

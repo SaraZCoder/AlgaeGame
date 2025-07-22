@@ -17,6 +17,10 @@ export class Boot extends Scene
 
     create ()
     {
+        // Set game dimensions in the registry
+        this.registry.set('gameWidth', this.sys.game.config.width);
+        this.registry.set('gameHeight', this.sys.game.config.height);
+
         this.scene.start('Preloader');
     }
 }
