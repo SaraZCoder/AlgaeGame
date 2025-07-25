@@ -12,7 +12,7 @@ export class GameOver extends Scene
         const gameWidth = this.registry.get('gameWidth');
         const gameHeight = this.registry.get('gameHeight');
 
-        this.cameras.main.setBackgroundColor(0x000000);
+        this.cameras.main.fadeIn(2000, 0, 0, 0);
 
         this.add.image(gameWidth/2, gameHeight/2, 'background').setAlpha(0.5);
 

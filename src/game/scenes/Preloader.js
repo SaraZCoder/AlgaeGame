@@ -31,30 +31,38 @@ export class Preloader extends Scene
 
     preload ()
     {
+        // Load game assets
         this.load.setPath('assets');
 
-        // Load game assets
-        this.load.image('start-menu', 'start-menu-draft.png');
-        this.load.image('animation-friend', 'animation-friend.png');
-        this.load.image('animation-photo', 'animation-photo.png');
-        this.load.image('game-bg', 'game-bg.png');
-        this.load.image('end-credits', 'end-credits-draft.png');
-        this.load.image('photo-icon-dark', 'photo-icon-dark.png');
-        this.load.image('photo-icon-light', 'photo-icon-light.png');
-        this.load.image('fertilizer', 'fertilizer.png');
-        this.load.image('fish-tank', 'fish-tank.png');
-        this.load.image('food', 'food.png');
-        this.load.image('lotion', 'lotion.png');
-        this.load.image('oil', 'oil.png');
-        this.load.image('pet-food', 'pet-food.png');
+        // Load scene backgrounds
+        this.load.image('game-bg',              'bg/game-bg.png');
+        this.load.image('end-credits',          'bg/end-credits-draft.png');
+        this.load.image('start-menu',           'bg/start-menu-draft.png');
+
+        // Animation assets
+        this.load.image('animation-friend',     'animation/friend.png');
+        this.load.image('animation-photo',      'animation/photo.png');
+
+        // Photo Icon
+        this.load.image('photo-icon-dark',      'photoIcon/dark.png');
+        this.load.image('photo-icon-light',     'photoIcon/light.png');
+
+        // Load algae items
+        this.load.image('fertilizer',           'algaeItems/fertilizer.png');
+        this.load.image('fish-tank',            'algaeItems/fish-tank.png');
+        this.load.image('food',                 'algaeItems/food.png');
+        this.load.image('lotion',               'algaeItems/lotion.png');
+        this.load.image('oil',                  'algaeItems/oil.png');
         
         // Load photos of algae products
-        this.load.image('algae-fertilizer',   'photos/algae-fertilizer.jpg');
-        this.load.image('algae-fish-tank',    'photos/algae-fish-tank.jpg');
-        this.load.image('algae-food',         'photos/algae-food.jpg');
-        this.load.image('algae-lotion',       'photos/algae-lotion.jpeg');
-        this.load.image('algae-oil',          'photos/algae-oil.jpg');
-        this.load.image('algae-pet-food',     'photos/algae-pet-food.jpg');
+        this.load.image('algae-fertilizer',     'photos/algae-fertilizer.jpg');
+        this.load.image('algae-fish-tank',      'photos/algae-fish-tank.jpg');
+        this.load.image('algae-food',           'photos/algae-food.jpg');
+        this.load.image('algae-lotion',         'photos/algae-lotion.jpeg');
+        this.load.image('algae-oil',            'photos/algae-oil.jpg');
+
+        // Load dialogue from json file
+        this.load.json('dialogue',              'assets/dialogue.json');
     }
 
     create ()

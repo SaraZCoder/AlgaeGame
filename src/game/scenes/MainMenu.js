@@ -32,7 +32,7 @@ export class MainMenu extends Scene
         });
 
         this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {
-            this.scene.start('Game')
+            this.scene.start('Game');
         });
     }
 }
