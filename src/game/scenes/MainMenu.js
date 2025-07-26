@@ -9,8 +9,10 @@ export class MainMenu extends Scene
 
     create ()
     {
+        const gameWidth = this.registry.get('gameWidth');
+        const gameHeight = this.registry.get('gameHeight');
+
         this.add.image(768, 432, 'background');
-        // this.add.image(960, 540, 'start-menu').setAlpha(0.5).setScale(2);
 
         this.add.text(768, 300, 'All Around Algae', {
             fontFamily: 'Arial Black', fontSize: 100, color: '#ffffff',
@@ -30,7 +32,7 @@ export class MainMenu extends Scene
         });
 
         this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {
-            this.scene.start('Game')
+            this.scene.start('Game');
         });
     }
 }

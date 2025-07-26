@@ -9,20 +9,17 @@ export class GameOver extends Scene
 
     create ()
     {
-        this.cameras.main.setBackgroundColor(0x000000);
+        const gameWidth = this.registry.get('gameWidth');
+        const gameHeight = this.registry.get('gameHeight');
 
-        this.add.image(960, 540, 'background').setAlpha(0.5);
+        this.cameras.main.fadeIn(2000, 0, 0, 0);
 
-        this.add.text(960, 540, 'end credits', {
+        this.add.image(gameWidth/2, gameHeight/2, 'background').setAlpha(0.5);
+
+        this.add.text(gameWidth/2, gameHeight/2, 'THE END', {
             fontFamily: 'Arial Black', fontSize: 64, color: '#ffffff',
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
-        }).setOrigin(0.5);
-
-        this.input.once('pointerdown', () => {
-
-            this.scene.start('MainMenu');
-
         });
     }
 }

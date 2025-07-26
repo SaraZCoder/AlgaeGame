@@ -1,0 +1,14 @@
+{
+    "intro": {
+        "friend": [
+            "Algae is everywhere! These photosynthetic organisms could be lurking in your house without your knowledge.",
+            "Your challenge is to search your house for items that contain algae. (My instincts tell me there are 5 such items.)"
+        ]
+    },
+    "outro": {
+        "friend": [
+            "Yay, you found all of the algae items in your house!",
+            "Goodbye!"
+        ]
+    }
+}
