@@ -170,6 +170,7 @@ export class Game extends Scene
             itemPhoto = this.add.image(photoFrame.x, photoFrame.y - 224, photoName).setAlpha(0);
             itemPhoto.setScrollFactor(0);
             itemPhoto.setDisplaySize(1022, 486);
+
             targets.push(itemPhoto);
         } else {
             this.add.text(this.cameras.width / 2, this.cameras.height / 2, 'Photo unavailable', { font: '80px Arial', fill: '#000000' });
@@ -217,9 +218,9 @@ export class Game extends Scene
                                     // Show friend animation once we reach 5/5
                                     if (this.score === 5) {
                                         const outroText = this.dialogue.Conclusion;
-                                        this.time.delayedCall(5000, this.friendAnimation(outroText, 2)); // TODO
-                                        // this.friendAnimation(outroText, 2);
-                                        // this.friendAnimation(this.outro, 2);
+                                        this.friendAnimation(outroText, 2); // TODO: Add delay
+                                        this.add.image(0, 0, 'photo-icon-light').setOrigin(0, 0).setInteractive({ pixelPerfect: true }).setScrollFactor(0);
+                                        this.scoreMessage.setText('');
                                     }
                                 }
                             });
@@ -233,6 +234,8 @@ export class Game extends Scene
     }
 
     friendAnimation (textPages = ['default text', 'yippee!'], numScene) {
+        this.photoIsVisible = true;
+
         // Show friend animation
         const bg = this.add.rectangle(this.cameras.main.width / 2, this.cameras.main.height / 2, this.cameras.main.width, this.cameras.main.height, 0xffffff, 0.5).setAlpha(0);
         bg.setScrollFactor(0).setInteractive();

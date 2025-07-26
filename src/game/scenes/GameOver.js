@@ -14,12 +14,6 @@ export class GameOver extends Scene
 
         this.cameras.main.fadeIn(2000, 0, 0, 0);
 
-        this.add.image(gameWidth/2, gameHeight/2, 'background').setAlpha(0.5);
-
-        this.add.text(gameWidth/2, gameHeight/2, 'THE END', {
-            fontFamily: 'Arial Black', fontSize: 64, color: '#ffffff',
-            stroke: '#000000', strokeThickness: 8,
-            align: 'center'
-        });
+        this.add.image(0, 0, 'end-credits').setDisplaySize(1920, 1080).setOrigin(0);
     }
 }
