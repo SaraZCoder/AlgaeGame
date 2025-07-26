@@ -65,7 +65,7 @@ export class Game extends Scene
                 this.showPhoto(oil, 'algae-oil', this.longText);
                 oil.setData('hasBeenClicked', true);
             } else {
-                this.showTemporaryText('You\'ve clicked on this before!');
+                this.showTemporaryText('You found this already!');
             }
         });
         food.on('pointerdown', () => {
@@ -73,7 +73,7 @@ export class Game extends Scene
                 this.showPhoto(food, 'algae-food', ['Dummy text for food.']);
                 food.setData('hasBeenClicked', true);
             } else {
-                this.showTemporaryText('You\'ve clicked on this before!');
+                this.showTemporaryText('You found this already!');
             }
         });
         fishTank.on('pointerdown', () => {
@@ -81,7 +81,7 @@ export class Game extends Scene
                 this.showPhoto(fishTank, 'algae-fish-tank', ['Dummy text for fish tank.']);
                 fishTank.setData('hasBeenClicked', true);
             } else {
-                this.showTemporaryText('You\'ve clicked on this before!');
+                this.showTemporaryText('You found this already!');
             }
         });
         lotion.on('pointerdown', () => {
@@ -89,7 +89,7 @@ export class Game extends Scene
                 this.showPhoto(lotion, 'algae-lotion', ['Dummy text for lotion.']);
                 lotion.setData('hasBeenClicked', true);
             } else {
-                this.showTemporaryText('You\'ve clicked on this before!');
+                this.showTemporaryText('You found this already!');
             }
         });
         fertilizer.on('pointerdown', () => {
@@ -97,7 +97,7 @@ export class Game extends Scene
                 this.showPhoto(fertilizer, 'algae-fertilizer', ['Dummy text for fertilizer.', 'MORE!!!', 'MOROEEEEEOOE!']);
                 fertilizer.setData('hasBeenClicked', true);
             } else {
-                this.showTemporaryText('You\'ve clicked on this before!');
+                this.showTemporaryText('You found this already!');
             }
         });
 
