@@ -34,10 +34,10 @@ export class Game extends Scene
         
         // Handle score logic and photo icon display
         this.score = 0
-        const photoIcon = this.add.image(1450, 75, 'photo-icon-dark').setScale(0.3);
+        const photoIcon = this.add.image(0, 0, 'photo-icon-dark').setOrigin(0, 0).setInteractive({ pixelPerfect: true });
         photoIcon.setScrollFactor(0);
-        this.scoreMessage = this.add.text(1418, 50, '0/5', 
-            { font: '48px Arial', fill: '#ffffffff' }
+        this.scoreMessage = this.add.text(4400, 200, '0/5', 
+            { font: '150px Arial', fill: '#ffffffff' }
         );
         this.scoreMessage.setScrollFactor(0);
         
@@ -128,6 +128,7 @@ export class Game extends Scene
         //         }
         //     });
         // }
+        // Launch friend animation
         this.friendAnimation(this.intro, 1);
 
         // Handle non-algae item clicks
@@ -157,10 +158,14 @@ export class Game extends Scene
         const photoFrame = this.add.image(this.cameras.main.width / 2, this.cameras.main.height / 2, 'animation-photo').setAlpha(0);
         photoFrame.setScrollFactor(0).setInteractive({ pixelPerfect: true });
         
-        const text = this.add.text(photoFrame.x - 400, photoFrame.y + 150, '', { font: '32px Arial', fill: '#000000', wordWrap: { width: 800 }, align: 'left' }).setOrigin(0, 0);
+        const text = this.add.text(photoFrame.x - 1300, photoFrame.y + 500, '', { font: '100px Arial', fill: '#000000', wordWrap: { width: 2500 }, align: 'left' }).setOrigin(0, 0);
         text.setScrollFactor(0).setAlpha(0);
+        
+        const friendText = this.add.text(photoFrame.x - 1200, photoFrame.y + 245, 'Friend', { font: '100px Arial', fill: '#000000' });
+        friendText.setScrollFactor(0).setAlpha(0);
 
-        const targets = [bg, photoFrame, text];
+        const targets = [bg, photoFrame, text, friendText];
+
         let itemPhoto;
         if (photoName) {
             itemPhoto = this.add.image(photoFrame.x, photoFrame.y - 180, photoName).setAlpha(0);
@@ -235,10 +240,13 @@ export class Game extends Scene
         const photoFrame = this.add.image(this.cameras.main.width / 2, this.cameras.main.height / 2, 'animation-friend').setAlpha(0);
         photoFrame.setScrollFactor(0).setInteractive({ pixelPerfect: true });
         
-        const text = this.add.text(photoFrame.x - 400, photoFrame.y + 150, '', { font: '32px Arial', fill: '#000000', wordWrap: { width: 800 }, align: 'left' }).setOrigin(0, 0);
+        const text = this.add.text(photoFrame.x - 1300, photoFrame.y + 500, '', { font: '100px Arial', fill: '#000000', wordWrap: { width: 2500 }, align: 'left' }).setOrigin(0, 0);
         text.setScrollFactor(0).setAlpha(0);
 
-        const targets = [bg, photoFrame, text];
+        const friendText = this.add.text(photoFrame.x - 1200, photoFrame.y + 245, 'Friend', { font: '100px Arial', fill: '#000000' });
+        friendText.setScrollFactor(0).setAlpha(0);
+
+        const targets = [bg, photoFrame, text, friendText];
 
         this.tweens.add({
             targets: targets,
@@ -335,10 +343,10 @@ export class Game extends Scene
     showTemporaryText(text) {
         const textObject = this.add.text(
             this.cameras.main.centerX,
-            50, // At the top of the screen
+            100, // At the top of the screen
             text,
             {
-                font: '32px Arial',
+                font: '100px Arial',
                 fill: '#000000', // Black text
                 backgroundColor: '#ffffff', // White background for readability
                 padding: { x: 10, y: 5 }
@@ -350,7 +358,7 @@ export class Game extends Scene
         this.tweens.add({
             targets: textObject,
             alpha: 0,
-            duration: 1500,
+            duration: 1000 +(50 * text.length),
             ease: 'Power2',
             onComplete: () => {
                 textObject.destroy();
