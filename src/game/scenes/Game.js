@@ -7,138 +7,113 @@ export class Game extends Scene
         super('Game');
         this.dialogue = null; // define dialogue property
         this.complete = false; // game complete?
-    }
-
-    create ()
-    {
-        // Retrieve pre-loaded dialogue
-        this.dialogue = this.cache.json.get('dialogue');
-        
-        // Switches game state between exploring the environment and viewing a pop-up
-        this.photoIsVisible = false; // false = explore mode
-        this.cameras.main.setBackgroundColor('#c2f9abff');
-        
-        // Set up game environment and click-and-drag
-        const bg = this.add.image(0, 0, 'game-bg').setOrigin(0, 0);
-        
-        this.cameras.main.setBounds(0, 0, bg.displayWidth, bg.displayHeight);
-        
-        this.input.on('pointermove', (pointer) => {
-            if (pointer.isDown && !this.photoIsVisible)
-                {
-                    this.cameras.main.scrollX -= (pointer.x - pointer.prevPosition.x);
-                }
-            });
-            
-        
-        // Handle score logic and photo icon display
-        this.score = 0
-        const photoIcon = this.add.image(0, 0, 'photo-icon-dark').setOrigin(0, 0).setInteractive({ pixelPerfect: true });
-        photoIcon.setScrollFactor(0);
-        this.scoreMessage = this.add.text(this.cameras.main.width - 167, 62, '0/5', 
-            { font: '80px Arial', fill: '#ffffffff' }
-        );
-        this.scoreMessage.setScrollFactor(0);
-        
-        // Declare interactive elements
-        const fishTank = this.add.image(0, 0, 'fish-tank').setOrigin(0, 0).setInteractive({ pixelPerfect: true });
-        const fertilizer = this.add.image(0, 0, 'fertilizer').setOrigin(0, 0).setInteractive({ pixelPerfect: true });
-        const food = this.add.image(0, 0, 'food').setOrigin(0, 0).setInteractive({ pixelPerfect: true });
-        const lotion = this.add.image(0, 0, 'lotion').setOrigin(0, 0).setInteractive({ pixelPerfect: true });
-        const oil = this.add.image(0, 0, 'oil').setOrigin(0, 0).setInteractive({ pixelPerfect: true });
-        this.longText = [
-            'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
-            'It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.'
-        ];
-
-        // Set object data (hasBeenClicked flag)
-        oil.setData('hasBeenClicked', false);
-        food.setData('hasBeenClicked', false);
-        fishTank.setData('hasBeenClicked', false);
-        lotion.setData('hasBeenClicked', false);
-        fertilizer.setData('hasBeenClicked', false);
-        
-        // Handle interactions
-        oil.on('pointerdown', () => {
-            if (oil.getData('hasBeenClicked') === false) {
-                this.showPhoto('algae-oil', this.dialogue.Oil);
-                oil.setData('hasBeenClicked', true);
-            } else {
-                this.showTemporaryText('You found this already!');
-            }
-        });
-        food.on('pointerdown', () => {
-            if (food.getData('hasBeenClicked') === false) {
-                this.showPhoto('algae-food', this.dialogue.Food);
-                food.setData('hasBeenClicked', true);
-            } else {
-                this.showTemporaryText('You found this already!');
-            }
-        });
-        fishTank.on('pointerdown', () => {
-            if (fishTank.getData('hasBeenClicked') === false) {
-                this.showPhoto('algae-fish-tank', this.dialogue.FishTank);
-                fishTank.setData('hasBeenClicked', true);
-            } else {
-                this.showTemporaryText('You found this already!');
-            }
-        });
-        lotion.on('pointerdown', () => {
-            if (lotion.getData('hasBeenClicked') === false) {
-                this.showPhoto('algae-lotion', this.dialogue.Lotion);
-                lotion.setData('hasBeenClicked', true);
-            } else {
-                this.showTemporaryText('You found this already!');
-            }
-        });
-        fertilizer.on('pointerdown', () => {
-            if (fertilizer.getData('hasBeenClicked') === false) {
-                this.showPhoto('algae-fertilizer', this.dialogue.Fertilizer);
-                fertilizer.setData('hasBeenClicked', true);
-            } else {
-                this.showTemporaryText('You found this already!');
-            }
-        });
-
-        // Add random not it! text
-        const nopeTexts = [
+        this.nopeTexts = [
             'Nope!',
             'This doesn\'t seem to have algae.',
             'Try somewhere else!',
             'It could contain algae in the future though…',
             'Nah.',
             'Not this.'
-        ]
+        ];
 
-        // photoIcon.setInteractive().on('pointerdown', () => {
-        //     this.showPhoto(null, textPages);
-        // });
+        // Constants
+        this.DRAG_THRESHOLD = 10;
+        this.SCORE_FONT_SIZE = '80px Arial';
+        this.INSTRUCTION_FONT_SIZE = '48px Arial';
+        this.MAX_SCORE = 5;
+    }
 
-        // Trigger the intro once all environment elements are loaded.
-        if (this.dialogue) {
-            const introText = this.dialogue.Intro;
-            this.friendAnimation(introText, 1);
-        } else {
-            this.cache.json.once('add', (cache, key) => {
-                if (key === 'dialogue') {
-                    this.dialogue = this.cache.json.get('dialogue');
-                    const introText = this.dialogue.Intro;
-                    this.friendAnimation(introText, 1);
+    create() {
+        this.setupDialogue();
+        this.setupCamera();
+        this.setupUI();
+        this.setupInteractiveObjects();
+        this.setupInputHandlers();
+        this.startIntroSequence();
+    }
+
+    setupCamera() {
+        this.photoIsVisible = false;
+        this.cameras.main.setBackgroundColor('#c2f9abff');
+        
+        const bg = this.add.image(0, 0, 'game-bg').setOrigin(0, 0);
+        this.cameras.main.setBounds(0, 0, bg.displayWidth, bg.displayHeight);
+    }
+
+    setupUI() {
+        this.score = 0;
+        const photoIcon = this.add.image(0, 0, 'photo-icon-dark').setOrigin(0, 0).setInteractive({ pixelPerfect: true });
+        photoIcon.setScrollFactor(0);
+        this.scoreMessage = this.add.text(this.cameras.main.width - 167, 62, '0/5', 
+            { font: '80px Arial', fill: '#ffffffff' }
+        );
+        this.scoreMessage.setScrollFactor(0);
+    }
+
+    setupInteractiveObjects() {
+        const interactiveItems = [
+            { key: 'oil', photo: 'algae-oil', dialogue: 'Oil' },
+            { key: 'food', photo: 'algae-food', dialogue: 'Food' },
+            { key: 'fish-tank', photo: 'algae-fish-tank', dialogue: 'FishTank' },
+            { key: 'lotion', photo: 'algae-lotion', dialogue: 'Lotion' },
+            { key: 'fertilizer', photo: 'algae-fertilizer', dialogue: 'Fertilizer' }
+        ];
+
+        interactiveItems.forEach(item => {
+            const gameObject = this.add.image(0, 0, item.key).setOrigin(0, 0).setInteractive({ pixelPerfect: true });
+            gameObject.setData('hasBeenClicked', false);
+            
+            gameObject.on('pointerdown', () => {
+                if (!gameObject.getData('hasBeenClicked')) {
+                    this.showPhoto(item.photo, this.dialogue[item.dialogue]);
+                    gameObject.setData('hasBeenClicked', true);
+                } else {
+                    this.showTemporaryText('You found this already!');
                 }
             });
-        }
-
-        // Handle non-algae item clicks
-        this.input.on('pointerup', (pointer, gameObjects) => {
-            if (this.photoIsVisible) {
-                return;
-            }
-            const dragThreshold = 10; // pixels
-            if (pointer.getDistance() < dragThreshold && gameObjects.length === 0) {
-                const randText = this.getRandomText(nopeTexts);
-                this.showTemporaryText(randText);
-            }
         });
+    }
+
+    setupInputHandlers() {
+        this.input.on('pointermove', this.handleCameraDrag.bind(this));
+        this.input.on('pointerup', this.handleMissedClicks.bind(this));
+    }
+
+    handleCameraDrag(pointer) {
+        if (pointer.isDown && !this.photoIsVisible) {
+            this.cameras.main.scrollX -= (pointer.x - pointer.prevPosition.x);
+        }
+    }
+
+    handleMissedClicks(pointer, gameObjects) {
+        if (this.photoIsVisible) return;
+        
+        if (pointer.getDistance() < this.DRAG_THRESHOLD && gameObjects.length === 0) {
+            const randText = this.getRandomText(this.nopeTexts);
+            this.showTemporaryText(randText);
+        }
+    }
+
+    async setupDialogue() {
+        if (!this.dialogue) {
+            this.dialogue = this.cache.json.get('dialogue');
+            if (!this.dialogue) {
+                await new Promise(resolve => {
+                    this.cache.json.once('add', (cache, key) => {
+                        if (key === 'dialogue') {
+                            this.dialogue = this.cache.json.get('dialogue');
+                            resolve();
+                        }
+                    });
+                });
+            }
+        }
+    }
+
+    async startIntroSequence() {
+        await this.setupDialogue();
+        const introText = this.dialogue.Intro;
+        this.friendAnimation(introText, 1);
     }
 
     showPhoto (photoName, textPages)
