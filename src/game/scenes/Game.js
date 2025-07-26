@@ -36,8 +36,8 @@ export class Game extends Scene
         this.score = 0
         const photoIcon = this.add.image(0, 0, 'photo-icon-dark').setOrigin(0, 0).setInteractive({ pixelPerfect: true });
         photoIcon.setScrollFactor(0);
-        this.scoreMessage = this.add.text(4400, 200, '0/5', 
-            { font: '150px Arial', fill: '#ffffffff' }
+        this.scoreMessage = this.add.text(this.cameras.main.width - 167, 62, '0/5', 
+            { font: '80px Arial', fill: '#ffffffff' }
         );
         this.scoreMessage.setScrollFactor(0);
         
@@ -62,7 +62,7 @@ export class Game extends Scene
         // Handle interactions
         oil.on('pointerdown', () => {
             if (oil.getData('hasBeenClicked') === false) {
-                this.showPhoto(oil, 'algae-oil', this.longText);
+                this.showPhoto('algae-oil', this.dialogue.Oil);
                 oil.setData('hasBeenClicked', true);
             } else {
                 this.showTemporaryText('You found this already!');
@@ -70,7 +70,7 @@ export class Game extends Scene
         });
         food.on('pointerdown', () => {
             if (food.getData('hasBeenClicked') === false) {
-                this.showPhoto(food, 'algae-food', ['Dummy text for food.']);
+                this.showPhoto('algae-food', this.dialogue.Food);
                 food.setData('hasBeenClicked', true);
             } else {
                 this.showTemporaryText('You found this already!');
@@ -78,7 +78,7 @@ export class Game extends Scene
         });
         fishTank.on('pointerdown', () => {
             if (fishTank.getData('hasBeenClicked') === false) {
-                this.showPhoto(fishTank, 'algae-fish-tank', ['Dummy text for fish tank.']);
+                this.showPhoto('algae-fish-tank', this.dialogue.FishTank);
                 fishTank.setData('hasBeenClicked', true);
             } else {
                 this.showTemporaryText('You found this already!');
@@ -86,7 +86,7 @@ export class Game extends Scene
         });
         lotion.on('pointerdown', () => {
             if (lotion.getData('hasBeenClicked') === false) {
-                this.showPhoto(lotion, 'algae-lotion', ['Dummy text for lotion.']);
+                this.showPhoto('algae-lotion', this.dialogue.Lotion);
                 lotion.setData('hasBeenClicked', true);
             } else {
                 this.showTemporaryText('You found this already!');
@@ -94,7 +94,7 @@ export class Game extends Scene
         });
         fertilizer.on('pointerdown', () => {
             if (fertilizer.getData('hasBeenClicked') === false) {
-                this.showPhoto(fertilizer, 'algae-fertilizer', ['Dummy text for fertilizer.', 'MORE!!!', 'MOROEEEEEOOE!']);
+                this.showPhoto('algae-fertilizer', this.dialogue.Fertilizer);
                 fertilizer.setData('hasBeenClicked', true);
             } else {
                 this.showTemporaryText('You found this already!');
@@ -116,20 +116,18 @@ export class Game extends Scene
         // });
 
         // Trigger the intro once all environment elements are loaded.
-        // if (this.dialogue) {
-        //     const introText = this.dialogue.intro.friend;
-        //     this.friendAnimation(introText, 1);
-        // } else {
-        //     this.cache.json.once('add', (cache, key) => {
-        //         if (key === 'dialogue') {
-        //             this.dialogue = this.cache.json.get('dialogue');
-        //             const introText = this.dialogue.intro.friend;
-        //             this.friendAnimation(introText, 1);
-        //         }
-        //     });
-        // }
-        // Launch friend animation
-        this.friendAnimation(this.intro, 1);
+        if (this.dialogue) {
+            const introText = this.dialogue.Intro;
+            this.friendAnimation(introText, 1);
+        } else {
+            this.cache.json.once('add', (cache, key) => {
+                if (key === 'dialogue') {
+                    this.dialogue = this.cache.json.get('dialogue');
+                    const introText = this.dialogue.Intro;
+                    this.friendAnimation(introText, 1);
+                }
+            });
+        }
 
         // Handle non-algae item clicks
         this.input.on('pointerup', (pointer, gameObjects) => {
@@ -144,7 +142,7 @@ export class Game extends Scene
         });
     }
 
-    showPhoto (item, photoName, textPages)
+    showPhoto (photoName, textPages)
     {
         // Handle score update
         this.score += 1;
@@ -158,19 +156,19 @@ export class Game extends Scene
         const photoFrame = this.add.image(this.cameras.main.width / 2, this.cameras.main.height / 2, 'animation-photo').setAlpha(0);
         photoFrame.setScrollFactor(0).setInteractive({ pixelPerfect: true });
         
-        const text = this.add.text(photoFrame.x - 1300, photoFrame.y + 500, '', { font: '100px Arial', fill: '#000000', wordWrap: { width: 2500 }, align: 'left' }).setOrigin(0, 0);
+        const text = this.add.text(this.cameras.main.width / 2 - 550, this.cameras.main.height / 2 + 200, '', { font: '40px Arial', fill: '#000000', wordWrap: { width: 1080 }, align: 'left' }).setOrigin(0, 0);
         text.setScrollFactor(0).setAlpha(0);
         
-        const friendText = this.add.text(photoFrame.x - 1200, photoFrame.y + 245, 'Friend', { font: '100px Arial', fill: '#000000' });
+        const friendText = this.add.text(photoFrame.x - 487, photoFrame.y + 97, 'Friend', { font: '40px Arial', fill: '#000000' });
         friendText.setScrollFactor(0).setAlpha(0);
 
         const targets = [bg, photoFrame, text, friendText];
 
         let itemPhoto;
         if (photoName) {
-            itemPhoto = this.add.image(photoFrame.x, photoFrame.y - 180, photoName).setAlpha(0);
+            itemPhoto = this.add.image(photoFrame.x, photoFrame.y - 224, photoName).setAlpha(0);
             itemPhoto.setScrollFactor(0);
-            itemPhoto.setDisplaySize(815, 385);
+            itemPhoto.setDisplaySize(1022, 486);
             targets.push(itemPhoto);
         } else {
             this.add.text(this.cameras.width / 2, this.cameras.height / 2, 'Photo unavailable', { font: '80px Arial', fill: '#000000' });
@@ -217,9 +215,9 @@ export class Game extends Scene
                                     this.photoIsVisible = false;
                                     // Show friend animation once we reach 5/5
                                     if (this.score === 5) {
-                                        // const outroText = this.dialogue.outro.friend;
-                                        // this.friendAnimation(outroText, 2);
-                                        this.friendAnimation(this.outro, 2);
+                                        const outroText = this.dialogue.Conclusion;
+                                        this.friendAnimation(outroText, 2);
+                                        // this.friendAnimation(this.outro, 2);
                                     }
                                 }
                             });
@@ -237,13 +235,13 @@ export class Game extends Scene
         const bg = this.add.rectangle(this.cameras.main.width / 2, this.cameras.main.height / 2, this.cameras.main.width, this.cameras.main.height, 0x000000, 0.5).setAlpha(0);
         bg.setScrollFactor(0).setInteractive();
 
-        const photoFrame = this.add.image(this.cameras.main.width / 2, this.cameras.main.height / 2, 'animation-friend').setAlpha(0);
+        const photoFrame = this.add.image(this.cameras.main.width / 2, this.cameras.main.height / 2, 'animation-friend').setAlpha(0).setDisplaySize(1920, 1080);
         photoFrame.setScrollFactor(0).setInteractive({ pixelPerfect: true });
         
-        const text = this.add.text(photoFrame.x - 1300, photoFrame.y + 500, '', { font: '100px Arial', fill: '#000000', wordWrap: { width: 2500 }, align: 'left' }).setOrigin(0, 0);
+        const text = this.add.text(this.cameras.main.width / 2 - 550, this.cameras.main.height / 2 + 200, '', { font: '40px Arial', fill: '#000000', wordWrap: { width: 1080 }, align: 'left' }).setOrigin(0, 0);
         text.setScrollFactor(0).setAlpha(0);
 
-        const friendText = this.add.text(photoFrame.x - 1200, photoFrame.y + 245, 'Friend', { font: '100px Arial', fill: '#000000' });
+        const friendText = this.add.text(photoFrame.x - 487, photoFrame.y + 97, 'Friend', { font: '40px Arial', fill: '#000000' });
         friendText.setScrollFactor(0).setAlpha(0);
 
         const targets = [bg, photoFrame, text, friendText];
@@ -346,7 +344,7 @@ export class Game extends Scene
             100, // At the top of the screen
             text,
             {
-                font: '100px Arial',
+                font: '48px Arial',
                 fill: '#000000', // Black text
                 backgroundColor: '#ffffff', // White background for readability
                 padding: { x: 10, y: 5 }

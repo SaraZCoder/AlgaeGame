@@ -12,7 +12,7 @@ export class MainMenu extends Scene
         const gameWidth = this.registry.get('gameWidth');
         const gameHeight = this.registry.get('gameHeight');
 
-        this.add.image(gameWidth / 2, gameHeight / 2, 'background');
+        this.add.image(gameWidth / 2, gameHeight / 2, 'background').setDisplaySize(1920, 1080);
 
         this.add.text(gameWidth / 2, gameHeight / 2 - 100, 'All Around Algae', {
             fontFamily: 'Arial Black', fontSize: 100, color: '#ffffff',

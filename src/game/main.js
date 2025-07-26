@@ -9,9 +9,9 @@ import { AUTO, Game } from 'phaser';
 //  https://docs.phaser.io/api-documentation/typedef/types-core#gameconfig
 const config = {
     type: AUTO,
-    // 16 by 9 inches
-    width: 4800, // 768
-    height: 2700, // 432
+    // 16 x 9 aspect ratio
+    width: 1920, 
+    height: 1080, 
     parent: 'game-container',
     backgroundColor: '#00000000',
     scale: {

@@ -62,7 +62,7 @@ export class Preloader extends Scene
         this.load.image('algae-oil',            'photos/algae-oil.jpg');
 
         // Load dialogue from json file
-        this.load.json('dialogue',              'assets/dialogue.json');
+        this.load.json('dialogue',              'data.json');
     }
 
     create ()
