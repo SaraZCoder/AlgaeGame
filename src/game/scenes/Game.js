@@ -148,7 +148,7 @@ export class Game extends Scene
         this.photoIsVisible = true;
 
         // Show photo and caption for input photo name and text
-        const bg = this.add.rectangle(this.cameras.main.width / 2, this.cameras.main.height / 2, this.cameras.main.width, this.cameras.main.height, 0x000000, 0.5).setAlpha(0);
+        const bg = this.add.rectangle(this.cameras.main.width / 2, this.cameras.main.height / 2, this.cameras.main.width, this.cameras.main.height, 0xffffff, 0.5).setAlpha(0);
         bg.setScrollFactor(0).setInteractive();
 
         const photoFrame = this.add.image(this.cameras.main.width / 2, this.cameras.main.height / 2, 'animation-photo').setAlpha(0);
@@ -217,7 +217,8 @@ export class Game extends Scene
                                     // Show friend animation once we reach 5/5
                                     if (this.score === 5) {
                                         const outroText = this.dialogue.Conclusion;
-                                        this.friendAnimation(outroText, 2);
+                                        this.time.delayedCall(5000, this.friendAnimation(outroText, 2)); // TODO
+                                        // this.friendAnimation(outroText, 2);
                                         // this.friendAnimation(this.outro, 2);
                                     }
                                 }
@@ -233,7 +234,7 @@ export class Game extends Scene
 
     friendAnimation (textPages = ['default text', 'yippee!'], numScene) {
         // Show friend animation
-        const bg = this.add.rectangle(this.cameras.main.width / 2, this.cameras.main.height / 2, this.cameras.main.width, this.cameras.main.height, 0x000000, 0.5).setAlpha(0);
+        const bg = this.add.rectangle(this.cameras.main.width / 2, this.cameras.main.height / 2, this.cameras.main.width, this.cameras.main.height, 0xffffff, 0.5).setAlpha(0);
         bg.setScrollFactor(0).setInteractive();
 
         const photoFrame = this.add.image(this.cameras.main.width / 2, this.cameras.main.height / 2, 'animation-friend').setAlpha(0).setDisplaySize(1920, 1080);
