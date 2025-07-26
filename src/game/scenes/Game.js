@@ -12,8 +12,6 @@ export class Game extends Scene
     {
         // Retrieve pre-loaded dialogue
         this.dialogue = this.cache.json.get('dialogue');
-        this.intro = ['Welcome to the wonderful world of algae!', 'Let\'s see what we can make!'];
-        this.outro = ['Welcome to the wonderful world of algae!', 'Let\'s see what we can make!'];
         
         // Switches game state between exploring the environment and viewing a pop-up
         this.photoIsVisible = false; // false = explore mode
@@ -162,7 +160,10 @@ export class Game extends Scene
         const friendText = this.add.text(photoFrame.x - 487, photoFrame.y + 97, 'Friend', { font: '40px Arial', fill: '#000000' });
         friendText.setScrollFactor(0).setAlpha(0);
 
-        const targets = [bg, photoFrame, text, friendText];
+        const continueText = this.add.text(photoFrame.x - 150, photoFrame.y + 425, 'Click anywhere to continue', { font: '24px Arial', fill: '#515151ff', align: 'center' }).setOrigin(0);
+        continueText.setScrollFactor(0).setAlpha(0);
+        
+        const targets = [bg, photoFrame, text, friendText, continueText];
 
         let itemPhoto;
         if (photoName) {
@@ -244,7 +245,10 @@ export class Game extends Scene
         const friendText = this.add.text(photoFrame.x - 487, photoFrame.y + 97, 'Friend', { font: '40px Arial', fill: '#000000' });
         friendText.setScrollFactor(0).setAlpha(0);
 
-        const targets = [bg, photoFrame, text, friendText];
+        const continueText = this.add.text(photoFrame.x - 150, photoFrame.y + 425, 'Click anywhere to continue', { font: '24px Arial', fill: '#515151ff', align: 'center' }).setOrigin(0);
+        continueText.setScrollFactor(0).setAlpha(0);
+        
+        const targets = [bg, photoFrame, text, friendText, continueText];
 
         this.tweens.add({
             targets: targets,
@@ -281,6 +285,32 @@ export class Game extends Scene
                                     photoFrame.destroy();
                                     text.destroy();
                                     this.photoIsVisible = false;
+                                    if (numScene === 1) {
+                                        // Show instructions for the game
+                                        const gameInstr = 'Click and drag to move around. Click on items to explore.';
+                                        const instr = this.add.text(this.cameras.main.width / 2, 100, gameInstr, 
+                                            { 
+                                                font: '48px Arial', 
+                                                color: '#000000', 
+                                                backgroundColor: '#ffffff',
+                                                padding: { x: 10, y: 5 }
+                                            }
+                                        ).setOrigin(0.5, 0).setAlpha(0);
+
+                                        instr.setScrollFactor(0); // Keep it fixed on the screen
+
+                                        this.tweens.add({
+                                            targets: instr,
+                                            alpha: 1,
+                                            duration: 500,
+                                            ease: 'Power2',
+                                            onComplete: () => {
+                                                this.input.once('pointerdown', () => {
+                                                    instr.destroy();
+                                                });
+                                            }
+                                        });
+                                    }
                                     if (numScene === 2) {
                                         // Move on to the end scene
                                         this.cameras.main.fadeOut(1000, 0, 0, 0);
@@ -358,6 +388,7 @@ export class Game extends Scene
             alpha: 0,
             duration: 1000 +(50 * text.length),
             ease: 'Power2',
+            delay: 1000,
             onComplete: () => {
                 textObject.destroy();
             }
