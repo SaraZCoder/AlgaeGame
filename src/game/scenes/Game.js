@@ -16,10 +16,12 @@ export class Game extends Scene
             'Not this.'
         ];
 
-        // Constants
+        // Constants - Separate font families and sizes
         this.DRAG_THRESHOLD = 10;
-        this.SCORE_FONT_SIZE = '80px Arial';
-        this.INSTRUCTION_FONT_SIZE = '48px Arial';
+        this.FONT_FAMILY = 'Pixel Operator, Arial, sans-serif';
+        this.SCORE_FONT_SIZE = '80px';
+        this.INSTRUCTION_FONT_SIZE = '60px';
+        this.TEXT_FONT_SIZE = '48px';
         this.MAX_SCORE = 5;
     }
 
@@ -34,23 +36,37 @@ export class Game extends Scene
 
     setupCamera() {
         this.photoIsVisible = false;
-        this.cameras.main.setBackgroundColor('#c2f9abff');
-        
-        const bg = this.add.image(0, 0, 'game-bg').setOrigin(0, 0);
+        this.cameras.main.setBackgroundColor('rgba(255, 255, 255, 1)');
+
+        const bg = this.add.image(0, 0, 'game-bg').setOrigin(0, 0).setAlpha(0);
+        this.tweens.add({
+            targets: bg,
+            duration: 500,
+            delay: 500,
+            alpha: 1
+        })
         this.cameras.main.setBounds(0, 0, bg.displayWidth, bg.displayHeight);
     }
 
     setupUI() {
         this.score = 0;
         const photoIcon = this.add.image(0, 0, 'photo-icon-dark').setOrigin(0, 0).setInteractive({ pixelPerfect: true });
+        photoIcon.setAlpha(0);
         photoIcon.setScrollFactor(0);
-        this.scoreMessage = this.add.text(this.cameras.main.width - 167, 62, '0/5', 
-            { font: '80px Arial', fill: '#ffffffff' }
+        this.tweens.add({
+            targets: photoIcon,
+            duration: 500,
+            delay: 500,
+            alpha: 1
+        })
+        this.scoreMessage = this.add.text(this.cameras.main.width - 160, 65, '0/5', 
+            { fontFamily: this.FONT_FAMILY, fontSize: this.SCORE_FONT_SIZE, fill: '#ffffffff' }
         );
         this.scoreMessage.setScrollFactor(0);
     }
 
     setupInteractiveObjects() {
+        // key should be the name of the algae item in Preloader.js
         const interactiveItems = [
             { key: 'oil', photo: 'algae-oil', dialogue: 'Oil' },
             { key: 'food', photo: 'algae-food', dialogue: 'Food' },
@@ -59,9 +75,13 @@ export class Game extends Scene
             { key: 'fertilizer', photo: 'algae-fertilizer', dialogue: 'Fertilizer' }
         ];
 
+        const items = [];
+
         interactiveItems.forEach(item => {
             const gameObject = this.add.image(0, 0, item.key).setOrigin(0, 0).setInteractive({ pixelPerfect: true });
+            gameObject.setAlpha(0);
             gameObject.setData('hasBeenClicked', false);
+            items.push(gameObject);
             
             gameObject.on('pointerdown', () => {
                 if (!gameObject.getData('hasBeenClicked')) {
@@ -72,6 +92,13 @@ export class Game extends Scene
                 }
             });
         });
+
+        this.tweens.add({
+            targets: items,
+            duration: 500,
+            delay: 500,
+            alpha: 1
+        })
     }
 
     setupInputHandlers() {
@@ -157,39 +184,18 @@ export class Game extends Scene
         if (numScene === 2) {
             this._addAnimation('animation-friend', '', textPages, () => {
                 // Post-animation logic for scene 2
-                this.cameras.main.fadeOut(1000, 0, 0, 0);
+                this.cameras.main.fadeOut(1000, 255, 255, 255);
                 this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {
                     this.scene.start('GameOver');
                 });
             });
         } else {
             // No delay for other scenes
-            this._addAnimation('animation-friend', '', textPages, () => {
+            this._addAnimation('friend-intro', '', textPages, () => {
                 // Post-animation logic for scene 1
                 if (numScene === 1) {
                     const gameInstr = 'Click and drag to move around. Click on items to explore.';
-                    const instr = this.add.text(this.cameras.main.width / 2, 100, gameInstr, 
-                        { 
-                            font: '48px Arial', 
-                            color: '#000000', 
-                            backgroundColor: '#ffffff',
-                            padding: { x: 10, y: 5 }
-                        }
-                    ).setOrigin(0.5, 0).setAlpha(0);
-                    
-                    instr.setScrollFactor(0);
-                    
-                    this.tweens.add({
-                        targets: instr,
-                        alpha: 1,
-                        duration: 500,
-                        ease: 'Power2',
-                        onComplete: () => {
-                            this.input.once('pointerdown', () => {
-                                instr.destroy();
-                            });
-                        }
-                    });
+                    this.showTemporaryText(gameInstr, true);
                 }
             });
         }
@@ -199,22 +205,21 @@ export class Game extends Scene
     {
         // bg is either 'animation-friend' or 'animation-photo'
         // Show photo and caption for input photo name and text
-        const bg = this.add.rectangle(this.cameras.main.width / 2, this.cameras.main.height / 2, this.cameras.main.width, this.cameras.main.height, 0xffffff, 0.5).setAlpha(0);
+        const bg = this.add.rectangle(this.cameras.main.width / 2, this.cameras.main.height / 2, this.cameras.main.width, this.cameras.main.height, 0xffffff, 0.9).setAlpha(0);
         bg.setScrollFactor(0).setInteractive();
 
         const photoFrame = this.add.image(this.cameras.main.width / 2, this.cameras.main.height / 2, image).setAlpha(0);
         photoFrame.setScrollFactor(0).setInteractive({ pixelPerfect: true });
         
-        const text = this.add.text(this.cameras.main.width / 2 - 550, this.cameras.main.height / 2 + 200, '', { font: '40px Arial', fill: '#000000', wordWrap: { width: 1080 }, align: 'left' }).setOrigin(0, 0);
+        const text = this.add.text(this.cameras.main.width / 2 - 550, this.cameras.main.height / 2 + 200, '', 
+            { fontFamily: this.FONT_FAMILY, fontSize: this.TEXT_FONT_SIZE, fill: '#000000', wordWrap: { width: 1080 }, align: 'left' }).setOrigin(0, 0);
         text.setScrollFactor(0).setAlpha(0);
         
-        const friendText = this.add.text(photoFrame.x - 487, photoFrame.y + 97, 'Friend', { font: '40px Arial', fill: '#000000' });
+        const friendText = this.add.text(photoFrame.x - 495, photoFrame.y + 95, 'Friend', 
+            { fontFamily: 'Pixel Operator Bold, Arial, sans serif', fontSize: this.TEXT_FONT_SIZE, fill: '#000000' });
         friendText.setScrollFactor(0).setAlpha(0);
-
-        const continueText = this.add.text(photoFrame.x - 150, photoFrame.y + 425, 'Click anywhere to continue', { font: '24px Arial', fill: '#515151ff', align: 'center' }).setOrigin(0);
-        continueText.setScrollFactor(0).setAlpha(0);
         
-        const targets = [bg, photoFrame, text, friendText, continueText]; // targets for animation
+        const targets = [bg, photoFrame, text, friendText]; // targets for animation
 
         let itemPhoto;
         if (photoName) {
@@ -240,10 +245,21 @@ export class Game extends Scene
 
                 const clickHandler = () => {
                     if (isTyping) {
+                        // Remove triangle when skipping
+                        if (text.continueTriangle) {
+                            text.continueTriangle.destroy();
+                            text.continueTriangle = null;
+                        }
                         this.typewriterEffect(text, textPages[currentPage], () => {
                             isTyping = false;
                         }, true);
                     } else {
+                        // Remove triangle when advancing
+                        if (text.continueTriangle) {
+                            text.continueTriangle.destroy();
+                            text.continueTriangle = null;
+                        }
+                        
                         currentPage++;
                         if (currentPage < textPages.length) {
                             isTyping = true;
@@ -251,7 +267,7 @@ export class Game extends Scene
                                 isTyping = false;
                             });
                         } else {
-                            this.input.off('pointerdown', clickHandler); // Important: remove listener
+                            this.input.off('pointerdown', clickHandler);
                             this.tweens.add({
                                 targets: targets,
                                 alpha: 0,
@@ -263,9 +279,9 @@ export class Game extends Scene
                                     if (itemPhoto) {
                                         itemPhoto.destroy();
                                     }
+                                    // Triangle will be automatically destroyed with text object
                                     this.photoIsVisible = false;
                                     
-                                    // Call the completion callback here
                                     if (onAnimationComplete) {
                                         onAnimationComplete();
                                     }
@@ -284,6 +300,12 @@ export class Game extends Scene
             textObject.typewriterTimer.remove();
         }
 
+        // Remove existing triangle if it exists
+        if (textObject.continueTriangle) {
+            textObject.continueTriangle.destroy();
+            textObject.continueTriangle = null;
+        }
+
         textObject.setText('');
         const words = text.split(' ');
         const baseDelay = 50;
@@ -291,6 +313,7 @@ export class Game extends Scene
 
         if (skip) {
             textObject.setText(text);
+            this.showContinueTriangle(textObject);
             if (onComplete) {
                 onComplete();
             }
@@ -301,6 +324,7 @@ export class Game extends Scene
         const addNextWord = () => {
             if (i >= words.length) {
                 textObject.typewriterTimer = null;
+                this.showContinueTriangle(textObject);
                 if (onComplete) {
                     onComplete();
                 }
@@ -314,38 +338,94 @@ export class Game extends Scene
             const delay = baseDelay + (word.length * perCharDelay);
             textObject.typewriterTimer = this.time.delayedCall(delay, addNextWord);
         };
-
         addNextWord();
     }
 
-    showTemporaryText(text) {
+    showContinueTriangle(textObject) {
+        // Create a triangle shape
+        const triangle = this.add.image(0, 0, 'continue-button').setOrigin(0);
+        
+        triangle.setScrollFactor(0);
+        triangle.setAlpha(0);
+        
+        // Store reference to triangle on the text object
+        textObject.continueTriangle = triangle;
+        
+        // Fade in the triangle
+        this.tweens.add({
+            targets: triangle,
+            alpha: 1,
+            duration: 300,
+            onComplete: () => {}
+        });
+    }
+
+    showTemporaryText(text, clickToContinue = false) {
         if (this.complete === true) {
-            text = 'You found all of the items! Please click your camera roll to finish.'
+            text = 'You found everything! Please click your camera roll to finish.'
         }
+        
+        // Create the text first to measure its size
         const textObject = this.add.text(
             this.cameras.main.centerX,
-            100, // At the top of the screen
+            100,
             text,
             {
-                font: '48px Arial',
-                fill: '#000000', // Black text
-                backgroundColor: '#ffffff', // White background for readability
+                fontFamily: this.FONT_FAMILY, 
+                fontSize: this.INSTRUCTION_FONT_SIZE,
+                fill: '#000000',
+                // Remove backgroundColor - we'll add our own background
                 padding: { x: 10, y: 5 }
             }
         ).setOrigin(0.5, 0);
 
-        textObject.setScrollFactor(0); // Keep it fixed on the screen
+        // Create rounded rectangle background
+        const bg = this.add.graphics();
+        bg.fillStyle(0xffffff); // White background
+        bg.fillRoundedRect(
+            textObject.x - textObject.width / 2 - 10, // x position (adjust for padding)
+            textObject.y - 5, // y position (adjust for padding)
+            textObject.width + 20, // width (text width + padding)
+            textObject.height + 10, // height (text height + padding)
+            10 // corner radius
+        );
+        
+        // Make sure text appears on top of background
+        textObject.setDepth(1);
+        bg.setDepth(0);
+        
+        // Set scroll factor for both
+        textObject.setScrollFactor(0);
+        bg.setScrollFactor(0);
 
-        this.tweens.add({
-            targets: textObject,
-            alpha: 0,
-            duration: 1000 +(100 * text.length),
-            ease: 'Power2',
-            delay: 1000,
-            onComplete: () => {
-                textObject.destroy();
-            }
-        });
+        // Animate both together
+        if (clickToContinue) {
+            this.input.once('pointerdown', () => {
+                this.tweens.add({
+                    targets: [textObject, bg],
+                    alpha: 0,
+                    duration: 1000 + (25 * text.length),
+                    ease: 'Power2',
+                    delay: 1000,
+                    onComplete: () => {
+                        textObject.destroy();
+                        bg.destroy();
+                    }
+                });
+            });
+        } else {
+            this.tweens.add({
+                targets: [textObject, bg],
+                alpha: 0,
+                duration: 1000 + (50 * text.length),
+                ease: 'Power2',
+                delay: 1000,
+                onComplete: () => {
+                    textObject.destroy();
+                    bg.destroy();
+                }
+            });
+        }
     }
 
     getRandomText(textArray) {

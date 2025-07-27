@@ -12,7 +12,7 @@ export class GameOver extends Scene
         const gameWidth = this.registry.get('gameWidth');
         const gameHeight = this.registry.get('gameHeight');
 
-        this.cameras.main.fadeIn(2000, 0, 0, 0);
+        this.cameras.main.fadeIn(2000, 255, 255, 255);
 
         this.add.image(0, 0, 'end-credits').setDisplaySize(1920, 1080).setOrigin(0);
     }
