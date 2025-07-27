@@ -10,7 +10,7 @@
         "Overall, as long as the amount of algae stays controlled, they are free feed for your fishies and nice decoration for your fish tank."
     ],
     "Food": [
-        "Yes. Seaweeds are macroalgae, so you have probably eaten algae. For example, the nori in your spam musubi is from the red algae genus Pyropia. Yum! ",
+        "Yes. Seaweeds are macroalgae, so you have probably eaten algae. For example, the nori in your spam musubi is from the red algae genus <i>Pyropia</i>. Yum! ",
         "Algae are also commonly used as a food additive. For instance, agar, which comes from red algae, is used as a vegan substitute for gelatin in many desserts. ",
         "Carrageenan is also a very common food additive extracted from algae. (This additive has been a bit controversial though. Do some research after this to find out why!)"
     ],
@@ -20,15 +20,15 @@
         "Algae oil!",
         "Both fish and algae oil are great sources of omega-3.",
         "Although it can be pricier than fish oil, algae oil is plant-based, more palatable, and environmentally friendly.",
-        "It looks like your algae oil is derived from the green microalgae genus Schizochytrium."
+        "It looks like your algae oil is derived from the green microalgae genus <i>Schizochytrium</i>."
     ],
     "Fertilizer": [
-        "What!? Algae are used as bio-fertilizers!? But it makes sense: living microalgae, commonly cyanobacteria (such as Anabaena and Spirulina), can provide the nitrogen and phosphorus that plants need. ",
+        "What!? Algae are used as bio-fertilizers!? But it makes sense: living microalgae, commonly cyanobacteria (such as <i>Anabaena</i> and <i>Spirulina</i>), can provide the nitrogen and phosphorus that plants need. ",
         "No wonder your plant has been growing so well!"
     ],
     "Lotion": [
         "Is that a moisturizer made with algae!? Many skincare products use algae for their hydrating and anti-oxidant benefits.",
-        "Look! Your anti-aging moisturizer uses algae oil from the green algae Chlorella p."
+        "Look! Your anti-aging moisturizer uses algae oil from the green algae <i>Chlorella protothecoides</i>."
     ],
     "Conclusion": [
         "Yay, you found all of the algae items in your house! ",
