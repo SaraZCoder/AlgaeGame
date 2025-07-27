@@ -37,11 +37,14 @@ export class Preloader extends Scene
         // Load scene backgrounds
         this.load.image('game-bg',              'bg/game-bg.png');
         this.load.image('end-credits',          'bg/end-credits-draft.png');
-        this.load.image('start-menu',           'bg/start-menu-draft.png');
-
+        this.load.image('start-menu',           'bg/start-menu.png');
+        this.load.image('start-menu-button',    'bg/start-menu-button.png');
+        
         // Animation assets
         this.load.image('animation-friend',     'animation/friend.png');
+        this.load.image('friend-intro',         'animation/friend-intro.png');
         this.load.image('animation-photo',      'animation/photo.png');
+        this.load.image('continue-button',      'animation/continue-button.png');
 
         // Photo Icon
         this.load.image('photo-icon-dark',      'photoIcon/dark.png');
@@ -63,10 +66,32 @@ export class Preloader extends Scene
 
         // Load dialogue from json file
         this.load.json('dialogue',              'data.json');
+
+        // Load WebFont library
+        this.load.script('webfont', 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js'); 
     }
 
     create ()
     {
-        this.scene.start('MainMenu');
+        // Wait for font to load before starting the game
+        if (window.WebFont) {
+            WebFont.load({
+                custom: {
+                    families: ['Pixel Operator', 'Pixel Operator Bold']
+                },
+                active: () => {
+                    // Font loaded successfully
+                    this.scene.start('MainMenu');
+                },
+                inactive: () => {
+                    // Font failed to load, start anyway with fallback
+                    console.warn('Custom font failed to load');
+                    this.scene.start('MainMenu');
+                }
+            });
+        } else {
+            // WebFont not available, start with fallback
+            this.scene.start('MainMenu');
+        }
     }
 }
