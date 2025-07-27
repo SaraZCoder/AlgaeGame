@@ -36,7 +36,7 @@ export class Preloader extends Scene
 
         // Load scene backgrounds
         this.load.image('game-bg',              'bg/game-bg.png');
-        this.load.image('end-credits',          'bg/end-credits-draft.png');
+        this.load.image('end-credits',          'bg/end-credits.png');
         this.load.image('start-menu',           'bg/start-menu.png');
         this.load.image('start-menu-button',    'bg/start-menu-button.png');
         
@@ -45,6 +45,7 @@ export class Preloader extends Scene
         this.load.image('friend-intro',         'animation/friend-intro.png');
         this.load.image('animation-photo',      'animation/photo.png');
         this.load.image('continue-button',      'animation/continue-button.png');
+        this.load.image('photo-frame',          'animation/photo-frame.png');
 
         // Photo Icon
         this.load.image('photo-icon-dark',      'photoIcon/dark.png');
@@ -64,6 +65,12 @@ export class Preloader extends Scene
         this.load.image('algae-lotion',         'photos/algae-lotion.jpeg');
         this.load.image('algae-oil',            'photos/algae-oil.jpg');
 
+        // Load sounds
+        this.load.audio('start-sound',          'sounds/start-sound.mp3');
+        this.load.audio('photo-sound',          'sounds/photo-sound.mp3');
+        this.load.audio('bg-music',             'sounds/cat-cafe-lofi.mp3');
+        this.load.audio('blip',                 'sounds/blip.mp3');
+
         // Load dialogue from json file
         this.load.json('dialogue',              'data.json');
 
@@ -81,7 +88,7 @@ export class Preloader extends Scene
                 },
                 active: () => {
                     // Font loaded successfully
-                    this.scene.start('MainMenu');
+                    this.scene.start('MainMenu'); 
                 },
                 inactive: () => {
                     // Font failed to load, start anyway with fallback

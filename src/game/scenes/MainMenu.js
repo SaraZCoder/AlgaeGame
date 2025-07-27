@@ -9,6 +9,10 @@ export class MainMenu extends Scene
 
     create ()
     {
+        var soundEffectConfig = {
+            volume: 0.1
+        }
+        this.startSound = this.sound.add('start-sound', soundEffectConfig);
         const gameWidth = this.registry.get('gameWidth');
         const gameHeight = this.registry.get('gameHeight');
 
@@ -35,6 +39,7 @@ export class MainMenu extends Scene
         });
 
         startButton.on('pointerdown', () => {
+            this.startSound.play();
             this.cameras.main.fadeOut(1000, 255, 255, 255);
             
             this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {

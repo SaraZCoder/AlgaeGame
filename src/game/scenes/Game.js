@@ -26,12 +26,30 @@ export class Game extends Scene
     }
 
     create() {
+        this.setupSounds();
         this.setupDialogue();
         this.setupCamera();
         this.setupUI();
         this.setupInteractiveObjects();
         this.setupInputHandlers();
         this.startIntroSequence();
+    }
+    
+    setupSounds() {
+        var soundEffectConfig = {
+            volume: 0.1,
+            rate: 0.5
+        }
+        var bgMusicConfig = {
+            volume: 0.1,
+            rate: 1,
+            mute: false,
+            delay: 0,
+            repeat: -1
+        }
+        this.photoSound = this.sound.add('photo-sound', soundEffectConfig);
+        this.bgMusic = this.sound.add('bg-music', bgMusicConfig);
+        this.blip = this.sound.add('blip', { volume: 0.1 });
     }
 
     setupCamera() {
@@ -87,6 +105,8 @@ export class Game extends Scene
                 if (!gameObject.getData('hasBeenClicked')) {
                     this.showPhoto(item.photo, this.dialogue[item.dialogue]);
                     gameObject.setData('hasBeenClicked', true);
+                    this.photoSound.rate += 0.1;
+                    this.photoSound.play();
                 } else {
                     this.showTemporaryText('You found this already!');
                 }
@@ -173,6 +193,7 @@ export class Game extends Scene
                     this.tweens.killTweensOf(photoIcon); // Stop the glow animation
                     photoIcon.setAlpha(1); // Reset alpha
                     this.friendAnimation(outroText, 2);
+                    this.photoSound.play();
                 });
             }
         });
@@ -196,6 +217,7 @@ export class Game extends Scene
                 if (numScene === 1) {
                     const gameInstr = 'Click and drag to move around. Click on items to explore.';
                     this.showTemporaryText(gameInstr, true);
+                    this.bgMusic.play();
                 }
             });
         }
@@ -205,6 +227,8 @@ export class Game extends Scene
     {
         // bg is either 'animation-friend' or 'animation-photo'
         // Show photo and caption for input photo name and text
+        this.bgMusic.pause();
+
         const bg = this.add.rectangle(this.cameras.main.width / 2, this.cameras.main.height / 2, this.cameras.main.width, this.cameras.main.height, 0xffffff, 0.9).setAlpha(0);
         bg.setScrollFactor(0).setInteractive();
 
@@ -281,6 +305,7 @@ export class Game extends Scene
                                     }
                                     // Triangle will be automatically destroyed with text object
                                     this.photoIsVisible = false;
+                                    this.bgMusic.resume();
                                     
                                     if (onAnimationComplete) {
                                         onAnimationComplete();
@@ -334,6 +359,9 @@ export class Game extends Scene
             const word = words[i];
             textObject.text += word + (i < words.length - 1 ? ' ' : '');
             i++;
+            if ((i+1) % 2 === 0) {
+                this.blip.play();
+            }
 
             const delay = baseDelay + (word.length * perCharDelay);
             textObject.typewriterTimer = this.time.delayedCall(delay, addNextWord);
