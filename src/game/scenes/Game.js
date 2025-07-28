@@ -308,6 +308,7 @@ export class Game extends Scene
             }
             this._addAnimation('animation-friend', '', textPages, () => {
                 // Post-animation logic for scene 2
+                this.complete = false;
                 this.cameras.main.fadeOut(1000, 255, 255, 255);
                 this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {
                     this.scene.start('GameOver');
@@ -543,7 +544,7 @@ export class Game extends Scene
                 }
             ).setOrigin(0.5, 0);
 
-            if (clickToContinue) {
+            if (this.complete || clickToContinue) {
                 textObject.setFontFamily('Pixel Operator Bold');
             }
     
