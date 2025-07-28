@@ -40,6 +40,8 @@ export class Preloader extends Scene
         this.load.image('start-menu-button',    'bg/start-menu-button.png');
         this.load.image('next-button',          'bg/next-button.png');
         this.load.image('prev-button',          'bg/prev-button.png');
+        this.load.image('replay-button',        'bg/replay-button.png');
+        this.load.image('instr-arrow',          'bg/instr-arrow.png');
         this.load.image('mute-off',             'bg/mute-off.png');
         this.load.image('mute-on',              'bg/mute-on.png');
         
@@ -99,7 +101,6 @@ export class Preloader extends Scene
                 },
                 active: () => {
                     // Font loaded successfully
-                    // this.scene.start('MainMenu'); 
                     this.cameras.main.fadeOut(1000, 255, 255, 255);
             
                     this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {

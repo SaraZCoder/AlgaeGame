@@ -13,7 +13,20 @@ export class MainMenu extends Scene
         var soundEffectConfig = {
             volume: 0.1
         }
+        var bgMusicConfig = {
+            volume: 0.1,
+            rate: 1,
+            mute: false,
+            delay: 0,
+            loop: true
+        }
         this.startSound = this.sound.add('start-sound', soundEffectConfig);
+        
+        // Check if background music is already playing globally
+        if (!this.game.bgMusic || !this.game.bgMusic.isPlaying) {
+            this.game.bgMusic = this.sound.add('bg-music', bgMusicConfig);
+            this.game.bgMusic.play();
+        }
         
         this.add.image(0, 0, 'start-menu').setOrigin(0);
 

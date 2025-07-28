@@ -24,6 +24,7 @@ export class Game extends Scene
         this.INSTRUCTION_FONT_SIZE = '60px';
         this.TEXT_FONT_SIZE = '48px';
         this.MAX_SCORE = 5;
+        this.SCREEN_EDGE_THRESHOLD = 200; // Distance from right edge to trigger arrow
     }
 
     create() {
@@ -42,17 +43,26 @@ export class Game extends Scene
             volume: 0.1,
             rate: 0.75
         }
-        var bgMusicConfig = {
-            volume: 0.1,
-            rate: 1,
-            mute: false,
-            delay: 0,
-            repeat: -1
-        }
+        
         this.photoSound = this.sound.add('photo-sound', soundEffectConfig);
         this.incorrectSound = this.sound.add('incorrect-sound', {volume: 0.1});
-        this.bgMusic = this.sound.add('bg-music', bgMusicConfig);
         this.blip = this.sound.add('blip', { volume: 0.1 });
+        
+        // Use the global background music reference, don't create a new one
+        if (!this.game.bgMusic) {
+            var bgMusicConfig = {
+                volume: 0.1,
+                rate: 1,
+                mute: false,
+                delay: 0,
+                repeat: -1
+            }
+            this.game.bgMusic = this.sound.add('bg-music', bgMusicConfig);
+            this.game.bgMusic.play();
+        }
+        
+        // Create a local reference for easier access
+        this.bgMusic = this.game.bgMusic;
     }
 
     setupCamera() {
@@ -111,7 +121,7 @@ export class Game extends Scene
                     this.photoSound.rate += 0.05;
                     this.photoSound.play();
                 } else {
-                    this.showTemporaryText('You found this already!');
+                    this.showNotification('You found this already!');
                 }
             });
         });
@@ -126,6 +136,7 @@ export class Game extends Scene
 
     setupInputHandlers() {
         this.input.on('pointermove', this.handleCameraDrag.bind(this));
+        this.input.on('pointermove', this.handleEdgeHover.bind(this));
         this.input.on('pointerup', this.handleMissedClicks.bind(this));
     }
 
@@ -140,8 +151,67 @@ export class Game extends Scene
         
         if (pointer.getDistance() < this.DRAG_THRESHOLD && gameObjects.length === 0) {
             const randText = this.getRandomText(this.nopeTexts);
-            this.showTemporaryText(randText);
+            this.showNotification(randText);
         }
+    }
+
+    handleEdgeHover(pointer) {
+        // Only check for edge hover during main gameplay
+        if (this.photoIsVisible || this.notification) return;
+        
+        // Get the pointer position in screen coordinates
+        const screenX = pointer.x;
+        const canScrollRight = this.cameras.main.scrollX < (this.cameras.main._bounds.width - this.cameras.main.width);
+        
+        // Check if pointer is near the right edge AND there's more content to scroll
+        if (screenX >= (this.cameras.main.width - this.SCREEN_EDGE_THRESHOLD) && canScrollRight && !this.showingInstrArrow) {
+            this.showInstrArrowOnHover();
+        } else if ((screenX < (this.cameras.main.width - this.SCREEN_EDGE_THRESHOLD) || !canScrollRight) && this.showingInstrArrow) {
+            this.hideInstrArrow();
+        }
+    }
+
+    showInstrArrowOnHover() {
+        if (this.complete) return;
+        if (this.showingInstrArrow) return;
+        
+        this.showingInstrArrow = true;
+        this.instrArrow = this.add.image(0, 0, 'instr-arrow').setOrigin(0).setAlpha(0);
+        this.instrArrow.setScrollFactor(0);
+        
+        this.tweens.add({
+            targets: this.instrArrow,
+            alpha: 1,
+            duration: 500,
+            onComplete: () => {
+                // Add the oscillating animation
+                this.tweens.add({
+                    targets: this.instrArrow,
+                    duration: 500,
+                    x: -20,
+                    yoyo: true,
+                    repeat: -1
+                });
+            }
+        });
+    }
+
+    hideInstrArrow() {
+        if (!this.showingInstrArrow || !this.instrArrow) return;
+        
+        this.tweens.killTweensOf(this.instrArrow);
+        this.tweens.add({
+            targets: this.instrArrow,
+            alpha: 0,
+            duration: 250,
+            onComplete: () => {
+                if (this.instrArrow) {
+                    this.instrArrow.destroy();
+                    this.instrArrow = null;
+                }
+                this.showingInstrArrow = false;
+            }
+        });
     }
 
     setupMuteButton() {
@@ -200,6 +270,9 @@ export class Game extends Scene
             // This callback runs when the animation is complete
             if (this.score === 5) {
                 this.complete = true;
+                const gameInstr3 = 'You found everything!\nPlease click your camera roll to finish.';
+                this.showNotification(gameInstr3, false);
+
                 const outroText = this.dialogue.Conclusion;
                 const photoIcon = this.add.image(0, 0, 'photo-icon-light').setOrigin(0, 0).setInteractive({ pixelPerfect: true }).setScrollFactor(0);
                 this.scoreMessage.setText('');
@@ -229,6 +302,10 @@ export class Game extends Scene
         this.photoIsVisible = true;
         
         if (numScene === 2) {
+            // Hide instruction arrow if needed
+            if (this.showingInstrArrow) {
+                this.hideInstrArrow();
+            }
             this._addAnimation('animation-friend', '', textPages, () => {
                 // Post-animation logic for scene 2
                 this.cameras.main.fadeOut(1000, 255, 255, 255);
@@ -241,9 +318,12 @@ export class Game extends Scene
             this._addAnimation('friend-intro', '', textPages, () => {
                 // Post-animation logic for scene 1
                 if (numScene === 1) {
-                    const gameInstr = 'Click and drag to move around. Click on items to explore.';
-                    this.showTemporaryText(gameInstr, true);
-                    this.bgMusic.play();
+                    const gameInstr1 = 'Click on items to explore.';
+                    const gameInstr2 = 'Click and drag to move around.';
+                    this.showNotification(gameInstr1, true, () => {
+                        this.showNotification(gameInstr2, true, () => {
+                        });
+                    });
                 }
             });
         }
@@ -253,7 +333,15 @@ export class Game extends Scene
     {
         // bg is either 'animation-friend' or 'animation-photo'
         // Show photo and caption for input photo name and text
-        this.bgMusic.pause();
+        
+        // Pause music if it exists and is playing
+        if (this.bgMusic && this.bgMusic.isPlaying) {
+            this.bgMusic.pause();
+        }
+        // Hide instruction arrow if needed
+        if (this.showingInstrArrow) {
+            this.hideInstrArrow();
+        }
 
         const bg = this.add.rectangle(this.cameras.main.width / 2, this.cameras.main.height / 2, this.cameras.main.width, this.cameras.main.height, 0xffffff, 0.9).setAlpha(0);
         bg.setScrollFactor(0).setInteractive();
@@ -275,6 +363,7 @@ export class Game extends Scene
         if (photoName) {
             itemPhoto = this.add.image(photoFrame.x, photoFrame.y, photoName).setAlpha(0);
             itemPhoto.setScrollFactor(0);
+            itemPhoto.setDepth(100);
 
             targets.push(itemPhoto);
         }
@@ -330,7 +419,11 @@ export class Game extends Scene
                                     }
                                     // Triangle will be automatically destroyed with text object
                                     this.photoIsVisible = false;
-                                    this.bgMusic.resume();
+                                    
+                                    // Resume music if it exists and was paused
+                                    if (this.bgMusic && this.bgMusic.isPaused) {
+                                        this.bgMusic.resume();
+                                    }
                                     
                                     if (onAnimationComplete) {
                                         onAnimationComplete();
@@ -422,9 +515,9 @@ export class Game extends Scene
         });
     }
 
-    showTemporaryText(text, clickToContinue = false) {
-        if (this.complete === true) {
-            text = 'You found everything! Please click your camera roll to finish.'
+    showNotification(text, clickToContinue = false, onComplete = null) {
+        if (this.complete) {
+            text = 'You found everything!\nPlease click your camera roll to finish.';
         }
 
         if (this.notification === false) {
@@ -445,9 +538,14 @@ export class Game extends Scene
                     fontFamily: this.FONT_FAMILY, 
                     fontSize: this.INSTRUCTION_FONT_SIZE,
                     fill: '#000000',
+                    align: 'center',
                     padding: { x: 10, y: 5 }
                 }
             ).setOrigin(0.5, 0);
+
+            if (clickToContinue) {
+                textObject.setFontFamily('Pixel Operator Bold');
+            }
     
             // Create rounded rectangle background
             const bg = this.add.graphics();
@@ -470,20 +568,32 @@ export class Game extends Scene
     
             // Animate both text and background together
             if (clickToContinue) {
-                this.input.once('pointerdown', () => {
-                    this.tweens.add({
-                        targets: [textObject, bg],
-                        alpha: 0,
-                        duration: 1000 + (25 * text.length),
-                        ease: 'Power2',
-                        delay: 1000,
-                        onComplete: () => {
-                            textObject.destroy();
-                            bg.destroy();
-                            this.notification = false;
-                        }
-                    });
-                });
+                textObject.setAlpha(0);
+                bg.setAlpha(0);
+                this.tweens.add({
+                    targets: [textObject, bg],
+                    alpha: 1,
+                    duration: 500,
+                    ease: 'Power2',
+                    onComplete: () => {
+                        this.input.once('pointerdown', () => {
+                            this.tweens.add({
+                                targets: [textObject, bg],
+                                alpha: 0,
+                                duration: 1000 + (25 * text.length),
+                                ease: 'Power2',
+                                onComplete: () => {
+                                    textObject.destroy();
+                                    bg.destroy();
+                                    this.notification = false;
+                                    if (onComplete) {
+                                        onComplete();
+                                    }
+                                }
+                            });
+                        });
+                    }
+                })
             } else {
                 this.tweens.add({
                     targets: [textObject, bg],
@@ -495,6 +605,9 @@ export class Game extends Scene
                         textObject.destroy();
                         bg.destroy();
                         this.notification = false;
+                        if (onComplete) {
+                            onComplete();
+                        }
                     }
                 });
             }
@@ -508,6 +621,47 @@ export class Game extends Scene
 
         const randomIndex = Math.floor(Math.random() * textArray.length);
         return textArray[randomIndex];
+    }
+
+    showInstrArrow() {
+        this.notification = true;
+        let instrArrow = this.add.image(0, 0, 'instr-arrow').setOrigin(0).setAlpha(0);
+        instrArrow.setScrollFactor(0);
+        this.tweens.add({
+            targets: instrArrow,
+            alpha: 1,
+            duration: 1000,
+            onComplete: () => {
+                this.tweens.add({
+                    targets: instrArrow,
+                    duration: 500,
+                    x: 20,
+                    yoyo: true,
+                    repeat: -1
+                })
+                this.input.on('pointermove', () => {
+                    this.input.on('pointerdown', () => {
+                        this.tweens.add({
+                            targets: instrArrow,
+                            alpha: 0,
+                            duration: 1000,
+                            onComplete: () => {
+                                instrArrow.destroy();
+                                this.notification = false;
+                            }
+                        })
+                    });
+                });
+            }
+        });
+    }
+
+    shutdown() {
+        if (this.instrArrow) {
+            this.instrArrow.destroy();
+            this.instrArrow = null;
+        }
+        this.showingInstrArrow = false;
     }
 
 }
