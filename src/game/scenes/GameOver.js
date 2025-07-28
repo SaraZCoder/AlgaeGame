@@ -26,7 +26,7 @@ export class GameOver extends Scene
     setupText() {
         const gameWidth = this.registry.get('gameWidth');
         const gameHeight = this.registry.get('gameHeight');
-        this.add.text(100, 100, 'End Credits',
+        this.add.text(100, 100, 'Credits',
             {
                 fontFamily: 'Pixel Operator Bold, Arial, sans serif',
                 fontSize: 100,

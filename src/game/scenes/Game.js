@@ -595,21 +595,39 @@ export class Game extends Scene
                     }
                 })
             } else {
-                this.tweens.add({
-                    targets: [textObject, bg],
-                    alpha: 0,
-                    duration: 1000 + (50 * text.length),
-                    ease: 'Power2',
-                    delay: 1000,
-                    onComplete: () => {
-                        textObject.destroy();
-                        bg.destroy();
-                        this.notification = false;
-                        if (onComplete) {
-                            onComplete();
+                if (this.complete) {
+                        this.tweens.add({
+                        targets: [textObject, bg],
+                        alpha: 0,
+                        duration: 500,
+                        ease: 'Power2',
+                        delay: 3000,
+                        onComplete: () => {
+                            textObject.destroy();
+                            bg.destroy();
+                            this.notification = false;
+                            if (onComplete) {
+                                onComplete();
+                            }
                         }
-                    }
-                });
+                    });
+                } else {
+                    this.tweens.add({
+                        targets: [textObject, bg],
+                        alpha: 0,
+                        duration: 1000 + (50 * text.length),
+                        ease: 'Power2',
+                        delay: 1000,
+                        onComplete: () => {
+                            textObject.destroy();
+                            bg.destroy();
+                            this.notification = false;
+                            if (onComplete) {
+                                onComplete();
+                            }
+                        }
+                    });
+                }
             }
         }
     }
