@@ -9,13 +9,12 @@ export class MainMenu extends Scene
 
     create ()
     {
+        this.cameras.main.fadeIn(1000, 255, 255, 255);
         var soundEffectConfig = {
             volume: 0.1
         }
         this.startSound = this.sound.add('start-sound', soundEffectConfig);
-        const gameWidth = this.registry.get('gameWidth');
-        const gameHeight = this.registry.get('gameHeight');
-
+        
         this.add.image(0, 0, 'start-menu').setOrigin(0);
 
         const startButton = this.add.image(0, 0, 'start-menu-button').setOrigin(0).setInteractive({ pixelPerfect: true });

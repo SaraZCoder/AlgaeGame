@@ -7,6 +7,7 @@ export class Game extends Scene
         super('Game');
         this.dialogue = null; // define dialogue property
         this.complete = false; // game complete?
+        this.notification = false; // notification not shown
         this.nopeTexts = [
             'Nope!',
             'This doesn\'t seem to have algae.',
@@ -33,12 +34,13 @@ export class Game extends Scene
         this.setupInteractiveObjects();
         this.setupInputHandlers();
         this.startIntroSequence();
+        this.setupMuteButton();
     }
     
     setupSounds() {
         var soundEffectConfig = {
             volume: 0.1,
-            rate: 0.5
+            rate: 0.75
         }
         var bgMusicConfig = {
             volume: 0.1,
@@ -48,6 +50,7 @@ export class Game extends Scene
             repeat: -1
         }
         this.photoSound = this.sound.add('photo-sound', soundEffectConfig);
+        this.incorrectSound = this.sound.add('incorrect-sound', {volume: 0.1});
         this.bgMusic = this.sound.add('bg-music', bgMusicConfig);
         this.blip = this.sound.add('blip', { volume: 0.1 });
     }
@@ -105,7 +108,7 @@ export class Game extends Scene
                 if (!gameObject.getData('hasBeenClicked')) {
                     this.showPhoto(item.photo, this.dialogue[item.dialogue]);
                     gameObject.setData('hasBeenClicked', true);
-                    this.photoSound.rate += 0.1;
+                    this.photoSound.rate += 0.05;
                     this.photoSound.play();
                 } else {
                     this.showTemporaryText('You found this already!');
@@ -139,6 +142,29 @@ export class Game extends Scene
             const randText = this.getRandomText(this.nopeTexts);
             this.showTemporaryText(randText);
         }
+    }
+
+    setupMuteButton() {
+        const muteButton = this.add.image(0, 0, 'mute-off').setOrigin(0).setAlpha(0);
+        muteButton.setInteractive( { pixelPerfect: true });
+        muteButton.setScrollFactor(0);
+
+        this.tweens.add({
+            targets: muteButton,
+            duration: 500,
+            delay: 500,
+            alpha: 1
+        })
+
+        muteButton.on('pointerdown', () => {
+            this.sound.mute = !this.sound.mute; // Toggles the mute state
+            // You can also update the button's appearance here to reflect the state
+            if (this.sound.mute) {
+                muteButton.setTexture('mute-off'); // Change to a 'muted' icon
+            } else {
+                muteButton.setTexture('mute-on'); // Change back to 'unmuted' icon
+            }
+        });
     }
 
     async setupDialogue() {
@@ -247,9 +273,8 @@ export class Game extends Scene
 
         let itemPhoto;
         if (photoName) {
-            itemPhoto = this.add.image(photoFrame.x, photoFrame.y - 224, photoName).setAlpha(0);
+            itemPhoto = this.add.image(photoFrame.x, photoFrame.y, photoName).setAlpha(0);
             itemPhoto.setScrollFactor(0);
-            itemPhoto.setDisplaySize(1022, 486); // TODO: might need to change if photo already positioned
 
             targets.push(itemPhoto);
         }
@@ -337,6 +362,8 @@ export class Game extends Scene
         const perCharDelay = 15;
 
         if (skip) {
+            text = text.replaceAll('<i>', '');
+            text = text.replaceAll('</i>', '');
             textObject.setText(text);
             this.showContinueTriangle(textObject);
             if (onComplete) {
@@ -356,7 +383,14 @@ export class Game extends Scene
                 return;
             }
 
-            const word = words[i];
+            var word = words[i];
+            // TODO: Add italic styling to algae genus
+            // The bottom solution only works without skipping
+            if (word.includes('<i>') || word.includes('</i>')) {
+                word = word.replace('<i>', '');
+                word = word.replace('</i>', '');
+                console.log('word successfully edited!');
+            }
             textObject.text += word + (i < words.length - 1 ? ' ' : '');
             i++;
             if ((i+1) % 2 === 0) {
@@ -392,67 +426,78 @@ export class Game extends Scene
         if (this.complete === true) {
             text = 'You found everything! Please click your camera roll to finish.'
         }
-        
-        // Create the text first to measure its size
-        const textObject = this.add.text(
-            this.cameras.main.centerX,
-            100,
-            text,
-            {
-                fontFamily: this.FONT_FAMILY, 
-                fontSize: this.INSTRUCTION_FONT_SIZE,
-                fill: '#000000',
-                // Remove backgroundColor - we'll add our own background
-                padding: { x: 10, y: 5 }
+
+        if (this.notification === false) {
+            this.notification = true;
+            if (!clickToContinue && !this.complete) {
+                this.incorrectSound.play();
+            } else {
+                if (!clickToContinue) {
+                    this.photoSound.play();
+                }
             }
-        ).setOrigin(0.5, 0);
-
-        // Create rounded rectangle background
-        const bg = this.add.graphics();
-        bg.fillStyle(0xffffff); // White background
-        bg.fillRoundedRect(
-            textObject.x - textObject.width / 2 - 10, // x position (adjust for padding)
-            textObject.y - 5, // y position (adjust for padding)
-            textObject.width + 20, // width (text width + padding)
-            textObject.height + 10, // height (text height + padding)
-            10 // corner radius
-        );
-        
-        // Make sure text appears on top of background
-        textObject.setDepth(1);
-        bg.setDepth(0);
-        
-        // Set scroll factor for both
-        textObject.setScrollFactor(0);
-        bg.setScrollFactor(0);
-
-        // Animate both together
-        if (clickToContinue) {
-            this.input.once('pointerdown', () => {
+            // Create the text first to measure its size
+            const textObject = this.add.text(
+                this.cameras.main.centerX,
+                100,
+                text,
+                {
+                    fontFamily: this.FONT_FAMILY, 
+                    fontSize: this.INSTRUCTION_FONT_SIZE,
+                    fill: '#000000',
+                    padding: { x: 10, y: 5 }
+                }
+            ).setOrigin(0.5, 0);
+    
+            // Create rounded rectangle background
+            const bg = this.add.graphics();
+            bg.fillStyle(0xffffff); // White background
+            bg.fillRoundedRect(
+                textObject.x - textObject.width / 2 - 10, // x position (adjust for padding)
+                textObject.y - 5, // y position (adjust for padding)
+                textObject.width + 20, // width (text width + padding)
+                textObject.height + 10, // height (text height + padding)
+                10 // corner radius
+            );
+            
+            // Make sure text appears on top of background
+            textObject.setDepth(1);
+            bg.setDepth(0);
+            
+            // Set scroll factor for both
+            textObject.setScrollFactor(0);
+            bg.setScrollFactor(0);
+    
+            // Animate both text and background together
+            if (clickToContinue) {
+                this.input.once('pointerdown', () => {
+                    this.tweens.add({
+                        targets: [textObject, bg],
+                        alpha: 0,
+                        duration: 1000 + (25 * text.length),
+                        ease: 'Power2',
+                        delay: 1000,
+                        onComplete: () => {
+                            textObject.destroy();
+                            bg.destroy();
+                            this.notification = false;
+                        }
+                    });
+                });
+            } else {
                 this.tweens.add({
                     targets: [textObject, bg],
                     alpha: 0,
-                    duration: 1000 + (25 * text.length),
+                    duration: 1000 + (50 * text.length),
                     ease: 'Power2',
                     delay: 1000,
                     onComplete: () => {
                         textObject.destroy();
                         bg.destroy();
+                        this.notification = false;
                     }
                 });
-            });
-        } else {
-            this.tweens.add({
-                targets: [textObject, bg],
-                alpha: 0,
-                duration: 1000 + (50 * text.length),
-                ease: 'Power2',
-                delay: 1000,
-                onComplete: () => {
-                    textObject.destroy();
-                    bg.destroy();
-                }
-            });
+            }
         }
     }
 

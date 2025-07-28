@@ -11,20 +11,19 @@ export class Preloader extends Scene
     {
         const gameWidth = this.registry.get('gameWidth');
         const gameHeight = this.registry.get('gameHeight');
-        //  We loaded this image in our Boot Scene, so we can display it here
-        this.add.image(gameWidth/2, gameHeight/2, 'background').setScale(2);
+        this.cameras.main.setBackgroundColor('#ffffff');
 
         //  A simple progress bar. This is the outline of the bar.
-        this.add.rectangle(gameWidth/2, gameHeight/2, 468, 32).setStrokeStyle(1, 0xffffff);
+        const progressBar = this.add.image(gameWidth/2, gameHeight/2, 'progress-bar');
 
         //  This is the progress bar itself. It will increase in size from the left based on the % of progress.
-        const bar = this.add.rectangle((gameWidth/2)-230, (gameHeight/2), 4, 28, 0xffffff);
+        const bar = this.add.rectangle((gameWidth/2)-486, (gameHeight/2) - 8, 4, 74, 0xb5eece).setBelow(progressBar);
 
         //  Use the 'progress' event emitted by the LoaderPlugin to update the loading bar
         this.load.on('progress', (progress) => {
 
             //  Update the progress bar (our bar is 464px wide, so 100% = 464px)
-            bar.width = 4 + (460 * progress);
+            bar.width = 4 + (980 * progress);
 
         });
     }
@@ -39,6 +38,10 @@ export class Preloader extends Scene
         this.load.image('end-credits',          'bg/end-credits.png');
         this.load.image('start-menu',           'bg/start-menu.png');
         this.load.image('start-menu-button',    'bg/start-menu-button.png');
+        this.load.image('next-button',          'bg/next-button.png');
+        this.load.image('prev-button',          'bg/prev-button.png');
+        this.load.image('mute-off',             'bg/mute-off.png');
+        this.load.image('mute-on',              'bg/mute-on.png');
         
         // Animation assets
         this.load.image('animation-friend',     'animation/friend.png');
@@ -60,14 +63,22 @@ export class Preloader extends Scene
         
         // Load photos of algae products
         this.load.image('algae-fertilizer',     'photos/algae-fertilizer.jpg');
-        this.load.image('algae-fish-tank',      'photos/algae-fish-tank.jpg');
-        this.load.image('algae-food',           'photos/algae-food.jpg');
-        this.load.image('algae-lotion',         'photos/algae-lotion.jpeg');
+        this.load.image('algae-fish-tank',      'photos/fish-tank.png');
+        this.load.image('algae-food',           'photos/food.png');
+        this.load.image('algae-lotion',         'photos/lotion.png');
         this.load.image('algae-oil',            'photos/algae-oil.jpg');
+        
+        // Load camera roll photos
+        // this.load.image('cam-fertilizer',       'end-scene/cam-fertilizer.png');
+        this.load.image('cam-fish-tank',        'end-scene/cam-fish-tank.png');
+        this.load.image('cam-food',             'end-scene/cam-food.png');
+        this.load.image('cam-lotion',           'end-scene/cam-lotion.png');
+        // this.load.image('cam-oil',              'end-scene/cam-oil.png');
 
         // Load sounds
         this.load.audio('start-sound',          'sounds/start-sound.mp3');
         this.load.audio('photo-sound',          'sounds/photo-sound.mp3');
+        this.load.audio('incorrect-sound',      'sounds/incorrect.mp3');
         this.load.audio('bg-music',             'sounds/cat-cafe-lofi.mp3');
         this.load.audio('blip',                 'sounds/blip.mp3');
 
@@ -88,7 +99,12 @@ export class Preloader extends Scene
                 },
                 active: () => {
                     // Font loaded successfully
-                    this.scene.start('MainMenu'); 
+                    // this.scene.start('MainMenu'); 
+                    this.cameras.main.fadeOut(1000, 255, 255, 255);
+            
+                    this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {
+                        this.scene.start('MainMenu');
+                    });
                 },
                 inactive: () => {
                     // Font failed to load, start anyway with fallback
