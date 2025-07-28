@@ -70,11 +70,11 @@ export class GameOver extends Scene
         
         // Set up algae photo metadata
         const algaePhotos = [
-            // { key: 'AlgaeOil', photo: 'cam-oil', dialogue: 'Oil' },
+            { key: 'AlgaeOil', photo: 'cam-oil', dialogue: 'Oil' },
             { key: 'SpamMusubi', photo: 'cam-food', dialogue: 'Food' },
             { key: 'FishTank', photo: 'cam-fish-tank', dialogue: 'FishTank' },
             { key: 'AlgaeLotion', photo: 'cam-lotion', dialogue: 'Lotion' },
-            // { key: 'AlgaeFertilizer', photo: 'cam-fertilizer', dialogue: 'Fertilizer' }
+            { key: 'AlgaeFertilizer', photo: 'cam-fertilizer', dialogue: 'Fertilizer' }
         ];
 
         var index = 0;

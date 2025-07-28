@@ -62,18 +62,18 @@ export class Preloader extends Scene
         this.load.image('oil',                  'algaeItems/oil.png');
         
         // Load photos of algae products
-        this.load.image('algae-fertilizer',     'photos/algae-fertilizer.jpg');
+        this.load.image('algae-fertilizer',     'photos/fertilizer.png');
         this.load.image('algae-fish-tank',      'photos/fish-tank.png');
         this.load.image('algae-food',           'photos/food.png');
         this.load.image('algae-lotion',         'photos/lotion.png');
-        this.load.image('algae-oil',            'photos/algae-oil.jpg');
+        this.load.image('algae-oil',            'photos/oil.png');
         
         // Load camera roll photos
-        // this.load.image('cam-fertilizer',       'end-scene/cam-fertilizer.png');
+        this.load.image('cam-fertilizer',       'end-scene/cam-fertilizer.png');
         this.load.image('cam-fish-tank',        'end-scene/cam-fish-tank.png');
         this.load.image('cam-food',             'end-scene/cam-food.png');
         this.load.image('cam-lotion',           'end-scene/cam-lotion.png');
-        // this.load.image('cam-oil',              'end-scene/cam-oil.png');
+        this.load.image('cam-oil',              'end-scene/cam-oil.png');
 
         // Load sounds
         this.load.audio('start-sound',          'sounds/start-sound.mp3');
